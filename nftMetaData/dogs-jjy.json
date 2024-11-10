@@ -1,0 +1,16 @@
+{
+    "description": "King dogs", 
+    "external_url": "https://openseacreatures.io/3", 
+    "image": "https://helpless-amaranth-harrier.myfilebase.com/ipfs/QmfVyBMVku49eJxoPXPWdJC23d7K3TvX2rCQtDkrgAVz2k", 
+    "name": "King Dogs",
+    "attributes": [ 
+    {
+        "trait_type": "Breed",
+        "value": "King Dogs"
+    },
+    {
+        "trait_type": "temperature",
+        "value": "average"       
+    }
+    ]
+  }
