@@ -36,18 +36,23 @@ contract NFTPoolLockAndRelease is CCIPReceiver, OwnerIsCreator {
     );
 
     // Event emitted when a message is received from another chain.
-    event MessageReceived(
-        bytes32 indexed messageId, // The unique ID of the CCIP message.
-        uint64 indexed sourceChainSelector, // The chain selector of the source chain.
-        address sender, // The address of the sender from the source chain.
-        string text // The text that was received.
+    event ToeknUnlocked(
+        uint256 tokenId,
+        address newOwner
     );
 
     bytes32 private s_lastReceivedMessageId; // Store the last received messageId.
     string private s_lastReceivedText; // Store the last received text.
 
     IERC20 private s_linkToken;
+
     MyToken public nft;
+        struct RequestData {
+        uint256 tokenId;
+        address newOwner;
+    }
+
+    mapping(uint256 => bool) public TokenLocked;
 
     /// @notice Constructor initializes the contract with the router address.
     /// @param _router The address of the router contract.
@@ -72,6 +77,8 @@ contract NFTPoolLockAndRelease is CCIPReceiver, OwnerIsCreator {
         address revceiver) public returns(bytes32){
             // 需要将NFT转移到Pool中进行lock（那就需要创建nft:1.导入要继承的MyToken合约;2.声明nft;3.创建nft对象）
             nft.transferFrom(msg.sender, address(this), tokenId);
+            // 完成转移后建立一个mapping用来记录转移情况
+            TokenLocked[tokenId] = true;
 
             //需要发送的数据
             bytes memory payload = abi.encode(tokenId, newOwner);
@@ -138,15 +145,17 @@ contract NFTPoolLockAndRelease is CCIPReceiver, OwnerIsCreator {
         internal
         override
     {
-        s_lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
-        s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
-
-        emit MessageReceived(
-            any2EvmMessage.messageId,
-            any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
-            abi.decode(any2EvmMessage.sender, (address)), // abi-decoding of the sender address,
-            abi.decode(any2EvmMessage.data, (string))
-        );
+        RequestData memory rd = abi.decode(any2EvmMessage.data, (RequestData));
+        // 至此我们就可以获得之前LockAndRelease池子中lockAndSendNFT()发送的数据：81行代码
+        uint256 tokenId = rd.tokenId;
+        address newOwner = rd.newOwner;
+        // 这个时候在从目标链将nft转移回来
+        // 先检查一下，转移回来的nft是不是被锁定的状态
+        require(TokenLocked[tokenId], "the tokenId is not locked");
+        // 条件通过之后，将nft从address(this)转移给newOwner
+        nft.transferFrom(address(this), newOwner, tokenId);
+        emit ToeknUnlocked(tokenId, newOwner);
+        
     }
 
     /// @notice Construct a CCIP message.
