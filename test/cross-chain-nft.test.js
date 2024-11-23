@@ -62,23 +62,18 @@ describe("source chain -> dest chain test", async function(){
             console.log("newOwner:",owner)
             expect(owner).to.equal(NFTPoolLockAndRelease.target)
         }
-        // async function(){
-        //     await nft.approve(NFTPoolLockAndRelease.target,0)
-        //     await ccipSimulator.requestLinkFromFaucet(
-        //         NFTPoolLockAndRelease, ethers.parseEther("10")
-        //     )
-        //     await NFTPoolLockAndRelease.lockAndSendNFT(0,
-        //         firstAccount,
-        //         chainSelector,
-        //         NFTPoolBurnAndMint.target
-        //     )
-        //     console.log("newOwner:",owner)
-        //     expect(owner).to.equal(NFTPoolLockAndRelease.target)
-        // }
     )
-})
 
-//test3--目标链接收到并mint新的wnft
+    //test3--目标链接收到并mint新的wnft
+    it("test if user can get a wrapped nft in dest chain",
+        async function(){
+            //当源链完成lockAndSendNFT后,会通过CCIP发送消息给目标链，目标链上就会mint一个wnft
+            //所以只要验证目标链上是否有id为0的wnft存在,即owner不是空值，且owner为firstAccount
+            const owner = await wnft.ownerOf(0)
+            expect(owner).to.equal(firstAccount)
+
+    })
+})
 
 
 //第二步：目标链destchain--》源链sourcechain
