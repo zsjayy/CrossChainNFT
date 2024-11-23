@@ -75,8 +75,28 @@ describe("source chain -> dest chain test", async function(){
     })
 })
 
-
 //第二步：目标链destchain--》源链sourcechain
-//目标链的wnft被burn掉，并通过ccip发送message给源链
+describe("dest chain->source chain test", async function(){
+    //test4-目标链的wnft被burn掉，并通过ccip发送message给源链
+    it("test if dest chain burn wnft and send message successfully",
+        async function() {
+            //wnft当前的owner是firstAccount,合约NFTPoolBurnAndMint想要burn掉wnft需要获取approve
+            await wnft.approve(NFTPoolBurnAndMint.target,0)
+            //需要消耗fees
+            await ccipSimulator.requestLinkFromFaucet(NFTPoolBurnAndMint,ethers.parseEther("10"))
+            //调用burnAndSendNFT()，传参为tokenId, newOwner, chainSelector, revceiver
+            await NFTPoolBurnAndMint.burnAndSendNFT(0,firstAccount,chainSelector,NFTPoolLockAndRelease.target)
+            //执行完burnAndSendNFT后，目标链的池子中就没有wnft了，此时totalSupply应该为0
+            const totalSupply = await wnft.totalSupply()
+            expect(totalSupply).to.equal(0)
+        }
+    )
+    //test5-源链接收到信息后，nft被unlock
+    it("test if source nft has unlocked", 
+        async function(){
+            //检查源链当中的nft是否被unlock释放出来
+            const owner = await nft.ownerOf(0)
+            expect(owner).to.equal(firstAccount) 
+    })
+})
 
-//源链接收到信息后，nft被unlock
