@@ -1,6 +1,7 @@
-moudle.exports = async({getNameAccounts, deployments}) => {
-    const firstAccount = await getNameAccounts()
-    const {deploy, log} = await deployments()
+const { getNamedAccounts } = require("hardhat")
+module.exports = async({getNamedAccounts, deployments}) => {
+    const {firstAccount} = await getNamedAccounts()
+    const {deploy, log} = deployments
 
     log("nft contract is deploying")
 
@@ -14,5 +15,5 @@ moudle.exports = async({getNameAccounts, deployments}) => {
 
 }
 
-moudle.exports.tags["sourcechain","all"]
+module.exports.tags = ["sourcechain", "all"]
 
