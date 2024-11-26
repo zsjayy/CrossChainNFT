@@ -9,6 +9,8 @@ module.exports = async({getNamedAccounts, deployments}) => {
     //如果使用的网络在developmentChains，及local就走mock获取对应的参数值
     let sourceChainRouter //根据测试网络的不同赋值
     let linkTokenAddr //根据测试网络的不同赋值
+    //这个if判断是去helper-hardhat-config.js找到developmentChains，并且查看developmentChains的里面的值是否包含当前的网络名称
+    //developmentChains = ["local", "harhat"]，当前network是根据部署命令 --network [网络名称]确定的
     if(developmentChains.includes(network.name)){
         //合约部署需要参数_router、_link、_nftAddr
         const ccipSimulatorDeployment = await deployments.get("CCIPLocalSimulator")
