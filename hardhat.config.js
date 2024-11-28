@@ -22,13 +22,19 @@ module.exports = {
       chainId:11155111,
       url:SEPOLIA_RPC_URL,
       accounts:[PRIVATE_KEY],
-      blockConfirmations:6
+      blockConfirmations:6,
+      companionNetworks:{
+        destChain:"amoy"
+      }
     },
     amoy:{
       chainId:80002,
       url:AMOY_RPC_URL,
       accounts:[PRIVATE_KEY],
-      blockConfirmations:6
+      blockConfirmations:6,
+      companionNetworks:{
+        destChain:"sepolia"
+      }
     }
   }
 };
