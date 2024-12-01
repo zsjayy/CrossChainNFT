@@ -12,6 +12,7 @@ task("mint-nft").setAction(async(taskArgs, hre) => {
     await mintTx.wait(6)
 
     const tokenAmount = nft.totalSupply()
+    //这个tokenId有误导性，被burn掉的tokenId没有被重置，后续铸造的代币tokenId依旧会继续累加，与totalSupply对不上
     const tokenId = await tokenAmount - 1n
     console.log(`nft minted,tokenId is ${tokenId}`)
 })
