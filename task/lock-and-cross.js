@@ -74,19 +74,36 @@ task("lock-and-cross")
 
         //开始调用lockAndSentNFT函数
         // ccip send
-        // console.log(`${tokenId}, ${firstAccount}, ${chainSelector}, ${receiver}`)
-        // try{
-        //     const lockAndCrossTx = await nftPoolLockAndRelease.lockAndSendNFT(
-        //         tokenId,
-        //         firstAccount,
-        //         chainSelector,
-        //         receiver,
-        //         { gasLimit: 8000000 }
-        //     )
-        //     console.log(`NFT locked and crossed, transaction hash is ${lockAndCrossTx.hash}`)
-        // }catch (error){
-        //     console.error("Full error object:", error);
-        // }
+        console.log(`${tokenId}, ${firstAccount}, ${chainSelector}, ${receiver}`)
+        
+        // let [account] = await ethers.getSigners()
+        const accountBalanceBefore = await ethers.provider.getBalance(firstAccount)
+        console.log(`部署前检查账户余额......,账户：${firstAccount},余额：${accountBalanceBefore}`)
+        try{
+
+            const lockAndCrossTx = await nftPoolLockAndRelease.lockAndSendNFT(
+                tokenId,
+                firstAccount,
+                chainSelector,
+                receiver,
+                { gasLimit: 500000 }
+            )
+            const accountBalanceAfter = await ethers.provider.getBalance(firstAccount)
+            console.log(`NFT locked and crossed, transaction hash is ${lockAndCrossTx.hash}`)
+            console.log(`==================================
+                "code":200,
+                "message":转移成功,
+                "转移的tokenId":${tokenId},
+                "from":${firstAccount},
+                "to":${receiver}
+                "执行合约Address":${nftPoolLockAndRelease},
+                "执行前账户余额":${accountBalanceBefore},
+                "执行后账户余额":${accountBalanceAfter},
+                "交易hash":${lockAndCrossTx.hash}
+==================================`)
+        }catch (error){
+            console.error("Full error object:", error);
+        }
 })
 
 module.exports = {}

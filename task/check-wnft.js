@@ -9,7 +9,7 @@ task("check-wnft").setAction(async(taskArgs, hre)=>{
     console.log(`there are ${totalSupply} in wnft Pool`)
 
     // 由于这里的token会被转移到其他链上，所以可能不会从0开始
-    for(let tokenId = 0; tokenId < totalSupply; tokenId++) {
+    for(let tokenId = 3; tokenId < 5; tokenId++) {
         try{
             const owner = await wnft.ownerOf(tokenId)
             console.log(`TokenId: ${tokenId}, Owner is ${owner}`)

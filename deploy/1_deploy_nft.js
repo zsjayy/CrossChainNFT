@@ -15,5 +15,5 @@ module.exports = async({getNamedAccounts, deployments}) => {
 
 }
 
-module.exports.tags = ["sourcechain", "all"]
+module.exports.tags = ["sourcechain","nft", "all"]
 

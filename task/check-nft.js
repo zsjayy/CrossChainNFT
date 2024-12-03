@@ -10,8 +10,10 @@ task("check-nft").setAction(async(taskArgs, hre) => {
 
     console.log("checking status of ERC-721")
     totalSupply = await nft.totalSupply()
+    const accountBalance = await ethers.provider.getBalance(firstAccount)
+    console.log(`当前账户的余额${accountBalance}`)
     console.log(`there are ${totalSupply} tokens under the collection`)
-    for(let tokenId = 0; tokenId <=5; tokenId++) {
+    for(let tokenId = 3; tokenId <=5; tokenId++) {
         try{
             const owner = await nft.ownerOf(tokenId)
             console.log(`TokenId: ${tokenId}, Owner is ${owner}`)
@@ -20,8 +22,7 @@ task("check-nft").setAction(async(taskArgs, hre) => {
                 console.error(`tokenId为${tokenId}的代币不存在当前合约中,错误码为:`,error,error.message)
             }else{
                 console.error(`其他未知错误`,error)
-            }
-            
+            }    
         }
 
     }

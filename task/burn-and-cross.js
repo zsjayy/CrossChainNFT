@@ -69,15 +69,33 @@ task("burn-and-cross")
         const approveResult =await wnft.getApproved(tokenId)
         console.log(`${tokenId} 授权给了 ${approveResult}`)
 
-        
+        const accountBalanceBefore = await ethers.provider.getBalance(firstAccount)
+        console.log(`部署前检查账户余额......,账户：${firstAccount},余额：${accountBalanceBefore}`)
         //执行burnAndMint函数方法
-        const burnAndCrossTx = await nftPoolBurnAndMint.burnAndSendNFT(
-            tokenId,
-            firstAccount,
-            chainSelector,
-            receiver
-        )
-        console.log(`tokenId为${tokenId}的wnft被burned,并通过ccip发送message给源链,Hx:${burnAndCrossTx.hash}`)
+        try{
+            const burnAndCrossTx = await nftPoolBurnAndMint.burnAndSendNFT(
+                tokenId,
+                firstAccount,
+                chainSelector,
+                receiver
+            )
+            await burnAndCrossTx.wait(6)
+            console.log(`tokenId为${tokenId}的wnft被burned,并通过ccip发送message给源链,Hx:${burnAndCrossTx.hash}`)
+            const accountBalanceAfter = await ethers.provider.getBalance(firstAccount)
+            console.log(`==================================
+                "code":200,
+                "message":转移成功,
+                "转移的tokenId":${tokenId},
+                "from":${firstAccount},
+                "to":${receiver}
+                "执行合约Address":${nftPoolBurnAndMint.target},
+                "执行前账户余额":${accountBalanceBefore},
+                "执行后账户余额":${accountBalanceAfter},
+                "交易hash":${burnAndCrossTx.hash}
+==================================`)
+        }catch (error){
+            console.error(`报错内容为：`,error)
+        }
         
 })
 
